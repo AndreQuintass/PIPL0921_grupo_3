@@ -1,7 +1,26 @@
 from fastapi import FastAPI
 from Posts import postList
+import sqlite3
 
 app = FastAPI()
+
+@app.get("/setup")
+async def setup_database():
+    try:
+        conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+        conn.execute("""
+        Create Table alunos(
+            id INTEGER primary key,
+            nome TEXT,
+            numero INTEGER,
+            email TEXT
+        )
+        """)
+
+        conn.close()
+    except:
+        pass
 
 @app.get("/")
 async def root():
