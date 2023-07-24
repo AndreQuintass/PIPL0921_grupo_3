@@ -50,11 +50,11 @@ async def setup_database():
 async def addteste():
     conn = sqlite3.connect("pi_dbDemo.sqlite")
 
-    conn.execute("""INSERT INTO turmas(nome, numero) VALUES ("PI0921", 10);""")
+    conn.execute("""INSERT INTO turmas(nome, numero) VALUES ('PI0921', 10);""")
 
-    #conn.execute("""INSERT INTO alunos(nome, numero, email, turma_id) VALUES ("Sofia Lopes", 25, "sofia.lopes@edu.atec.pt", 1);""")
-    
-    #conn.execute("""INSERT INTO professores(nome, numero, email, turma_id) VALUES ("Mario Luis", 52, "mario.luis@edu.atec.pt", 1);""")
+    conn.execute("""INSERT INTO alunos(nome, numero, email, turma_id) VALUES ('Sofia Lopes', 25, 'sofia.lopes@edu.atec.pt', 1);""")
+
+    conn.execute("""INSERT INTO professores(nome, numero, email, turma_id) VALUES ('Mario Luis', 52, 'mario.luis@edu.atec.pt', 1);""")
 
     conn.commit()
 
@@ -62,8 +62,52 @@ async def addteste():
 
 @app.get("/checkall")
 async def checkall():
-    pass
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
 
+    allTables = []
+    cur = conn.cursor()
+
+    for table in ["turmas", "alunos", "professores"]:
+        cur.execute(f"SELECT * from {table};")
+        allTables.append(cur.fetchall())
+
+    conn.close()
+
+    return {"allTables" : allTables}
+
+@app.get("/addturma")
+async def addturma(nome: str, num: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    sql = f"""INSERT INTO turmas(nome, numero) VALUES ('{nome}', {num});"""
+
+    conn.execute(sql)
+
+    conn.commit()
+
+    conn.close()
+
+    print(sql)
+
+@app.get("/addaluno")
+async def addaluno(nome: str, num: int, email: str, turma_id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    conn.execute(f"""INSERT INTO alunos(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+
+    conn.commit()
+
+    conn.close()
+
+@app.get("/addprofessor")
+async def addprofessor(nome: str, num: int, email: str, turma_id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    conn.execute(f"""INSERT INTO professores(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+
+    conn.commit()
+
+    conn.close()
 
 @app.get("/")
 async def root():
