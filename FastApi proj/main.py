@@ -75,6 +75,26 @@ async def checkall():
 
     return {"allTables" : allTables}
 
+@app.get("/check/turmas")
+async def checkturmas():
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute("Select * from turmas")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+@app.get("/check/turmas/{id}")
+async def checkturma(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute(f"Select * from turmas where id ={id}")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
 @app.get("/addturma")
 async def addturma(nome: str, num: int):
     conn = sqlite3.connect("pi_dbDemo.sqlite")
@@ -89,37 +109,39 @@ async def addturma(nome: str, num: int):
 
     print(sql)
 
-@app.get("/addaluno")
-async def addaluno(nome: str, num: int, email: str, turma_id: int):
+@app.get("/changeturma")
+async def changeturma(id: int, nome: str = None, num: int = None):
+
+    if nome == None and num == None:
+        return "null"
+
     conn = sqlite3.connect("pi_dbDemo.sqlite")
 
-    conn.execute(f"""INSERT INTO alunos(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+    sql = ""
+
+    if nome != None:
+        sql = f"""UPDATE turmas set nome = '{nome}' where id = {id};"""
+
+    if num != None:
+        sql = f"""UPDATE turmas set numero = {num} where id = {id};"""
+
+    conn.execute(sql)
 
     conn.commit()
 
     conn.close()
 
-@app.get("/addprofessor")
-async def addprofessor(nome: str, num: int, email: str, turma_id: int):
+    print(sql)
+
+@app.get("/remove/turmas/{id}")
+async def delturma(id: int):
     conn = sqlite3.connect("pi_dbDemo.sqlite")
 
-    conn.execute(f"""INSERT INTO professores(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+    conn.execute(f"delete from turmas where id = {id};")
 
     conn.commit()
 
     conn.close()
-
-
-@app.get("/check/turmas")
-async def checkturmas():
-    conn = sqlite3.connect("pi_dbDemo.sqlite")
-    cur = conn.cursor()
-    cur.execute("Select * from turmas")
-    conn.commit()
-    curry = cur.fetchall()
-    conn.close()
-    return curry
-
 
 @app.get("/check/alunos")
 async def checkalunos():
@@ -131,6 +153,59 @@ async def checkalunos():
     conn.close()
     return curry
 
+@app.get("/check/alunos/{id}")
+async def checkalunos(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute(f"Select * from alunos where id ={id}")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+@app.get("/addaluno")
+async def addaluno(nome: str, num: int, email: str, turma_id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    conn.execute(f"""INSERT INTO alunos(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+
+    conn.commit()
+
+    conn.close()
+
+@app.get("/changealuno")
+async def changealuno(id: int, nome: str = None, num: int = None, email: str = None, turma_id: int = None):
+
+    if nome == None and num == None and email == None and turma_id == None:
+        return "null"
+
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    if nome != None:
+        conn.execute(f"""UPDATE alunos set nome = '{nome}' where id = {id};""")
+
+    if num != None:
+        conn.execute(f"""UPDATE alunos set numero = {num} where id = {id};""")
+
+    if email != None:
+        conn.execute(f"""UPDATE alunos set email = '{email}' where id = {id};""")
+
+    if turma_id != None:
+        conn.execute(f"""UPDATE alunos set turma_id = {turma_id} where id = {id};""")
+
+    conn.commit()
+
+    conn.close()
+
+@app.get("/remove/aluno/{id}")
+async def delaluno(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    conn.execute(f"delete from alunos where id = {id};")
+
+    conn.commit()
+
+    conn.close()
 
 @app.get("/check/professores")
 async def checkprofessores():
@@ -142,19 +217,7 @@ async def checkprofessores():
     conn.close()
     return curry
 
-
-@app.get(f"/check/alunos/{id}")
-async def checkalunos(id: int):
-    conn = sqlite3.connect("pi_dbDemo.sqlite")
-    cur = conn.cursor()
-    cur.execute(f"Select * from alunos where id ={id}")
-    conn.commit()
-    curry = cur.fetchall()
-    conn.close()
-    return curry
-
-
-@app.get(f"/check/professores/{id}")
+@app.get("/check/professores/{id}")
 async def checkprofs(id: int):
     conn = sqlite3.connect("pi_dbDemo.sqlite")
     cur = conn.cursor()
@@ -164,16 +227,49 @@ async def checkprofs(id: int):
     conn.close()
     return curry
 
-@app.get(f"/check/turma/{id}")
-async def checkturma(id: int):
+@app.get("/addprofessor")
+async def addprofessor(nome: str, num: int, email: str, turma_id: int):
     conn = sqlite3.connect("pi_dbDemo.sqlite")
-    cur = conn.cursor()
-    cur.execute(f"Select * from turmas where id ={id}")
-    conn.commit()
-    curry = cur.fetchall()
-    conn.close()
-    return curry
 
+    conn.execute(f"""INSERT INTO professores(nome, numero, email, turma_id) VALUES ('{nome}', {num}, '{email}', {turma_id});""")
+
+    conn.commit()
+
+    conn.close()
+
+@app.get("/changeprofessor")
+async def changeprofessor(id: int, nome: str = None, num: int = None, email: str = None, turma_id: int = None):
+
+    if nome == None and num == None and email == None and turma_id == None:
+        return "null"
+
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    if nome != None:
+        conn.execute(f"""UPDATE professores set nome = '{nome}' where id = {id};""")
+
+    if num != None:
+        conn.execute(f"""UPDATE professores set numero = {num} where id = {id};""")
+
+    if email != None:
+        conn.execute(f"""UPDATE professores set email = '{email}' where id = {id};""")
+
+    if turma_id != None:
+        conn.execute(f"""UPDATE professores set turma_id = {turma_id} where id = {id};""")
+
+    conn.commit()
+
+    conn.close()
+
+@app.get("/remove/professor/{id}")
+async def delprof(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+
+    conn.execute(f"delete from professores where id = {id};")
+
+    conn.commit()
+
+    conn.close()
 
 @app.get("/")
 async def root():
