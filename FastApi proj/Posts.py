@@ -24,3 +24,4 @@ bodys = [
 ]
 
 postList = [Post(random.choice(titles), random.choice(bodys), int(idd/3)+1) for idd in range(20)]
+#
