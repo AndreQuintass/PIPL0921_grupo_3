@@ -292,4 +292,3 @@ async def rootTeste(id: int = -1):
 
     p = postList[id]
     return {"id": f"{id}", "title": f"{p.title}", "body": f"{p.body}","userId":f"{p.userId}" }
-#
