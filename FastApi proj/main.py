@@ -109,6 +109,72 @@ async def addprofessor(nome: str, num: int, email: str, turma_id: int):
 
     conn.close()
 
+
+@app.get("/check/turmas")
+async def checkturmas():
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute("Select * from turmas")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+
+@app.get("/check/alunos")
+async def checkalunos():
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute("Select * from alunos")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+
+@app.get("/check/professores")
+async def checkprofessores():
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute("Select * from professores")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+
+@app.get(f"/check/alunos/{id}")
+async def checkalunos(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute(f"Select * from alunos where id ={id}")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+
+@app.get(f"/check/professores/{id}")
+async def checkprofs(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute(f"Select * from professores where id ={id}")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+@app.get(f"/check/turma/{id}")
+async def checkturma(id: int):
+    conn = sqlite3.connect("pi_dbDemo.sqlite")
+    cur = conn.cursor()
+    cur.execute(f"Select * from turmas where id ={id}")
+    conn.commit()
+    curry = cur.fetchall()
+    conn.close()
+    return curry
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
